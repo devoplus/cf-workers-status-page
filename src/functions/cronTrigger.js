@@ -145,6 +145,17 @@ export async function processCronTrigger(event) {
       if (monitorStatusChanged || monitorsState.monitors[monitor.id].checks[checkDay].fails == 0) {
         monitorsState.monitors[monitor.id].checks[checkDay].fails++
       }
+
+      if (monitorStatusChanged) {
+        if (monitorsState.monitors[monitor.id].history == 'undefined') {
+          monitorsState.monitors[monitor.id].history = []
+        }
+
+        monitorsState.monitors[monitor.id].history.push({
+          time: Date.now(),
+          status: monitorOperational
+        });
+      }
     }
   }
 
