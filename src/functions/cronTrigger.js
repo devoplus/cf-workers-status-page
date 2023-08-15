@@ -36,7 +36,6 @@ export async function processCronTrigger(event) {
         firstCheck: checkDay,
         lastCheck: {},
         checks: {},
-        history: {},
       }
     }
 
@@ -145,10 +144,6 @@ export async function processCronTrigger(event) {
       // Increment failed checks on status change or first fail of the day (maybe call it .incidents instead?)
       if (monitorStatusChanged || monitorsState.monitors[monitor.id].checks[checkDay].fails == 0) {
         monitorsState.monitors[monitor.id].checks[checkDay].fails++
-      }
-
-      if (monitorStatusChanged) {
-        monitorsState.monitors[monitor.id].history[Date.now()].status = monitorOperational;
       }
     }
   }
