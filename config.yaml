@@ -1,8 +1,8 @@
 settings:
-  title: 'Devoplus Status Page'
+  title: 'Devoplus Status'
   url: 'https://status.devo.plus' # used for Slack messages
   logo: logo-192x192.png # image in ./public/ folder
-  daysInHistogram: 90 # number of days you want to display in histogram
+  daysInHistogram: 7 # number of days you want to display in histogram
   collectResponseTimes: true # collects avg response times from CRON locations
 
   allmonitorsOperational: 'All Systems Operational'
@@ -27,7 +27,7 @@ monitors:
     name: Devoplus API
     url: 'https://api.devoplus.com.tr/'
     method: GET
-    expectStatus: 200
+    expectStatus: 401
     linkable: false
     followRedirect: false
 
