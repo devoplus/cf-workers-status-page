@@ -36,6 +36,7 @@ export async function processCronTrigger(event) {
         firstCheck: checkDay,
         lastCheck: {},
         checks: {},
+        history: {},
       }
     }
 
@@ -147,14 +148,7 @@ export async function processCronTrigger(event) {
       }
 
       if (monitorStatusChanged) {
-        if (monitorsState.monitors[monitor.id].history == 'undefined') {
-          monitorsState.monitors[monitor.id].history = []
-        }
-
-        monitorsState.monitors[monitor.id].history.push({
-          time: Date.now(),
-          status: monitorOperational
-        });
+        monitorsState.monitors[monitor.id].history[Date.now()].status = monitorOperational;
       }
     }
   }
