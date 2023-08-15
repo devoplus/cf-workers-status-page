@@ -101,10 +101,10 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
           </div>
           <div>
             <a
-              href="https://github.com/eidam/cf-workers-status-page"
+              href="https://www.devoplus.com.tr/"
               target="_blank"
             >
-              Get Your Status Page
+              Devoplus
             </a>
           </div>
         </div>
