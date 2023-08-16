@@ -64,36 +64,36 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
               setTheme(query.matches ? "dark" : "light")
             }
           })()
-
-          
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/");
-          xhr.send();
-          xhr.responseType = "json";
-          xhr.onload = () => {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-              var data = xhr.response;
-              
-              var totalDowntime = 0;    
-              var downtimes = jlinq.from(data).equals("statusCode", 0).select();
-              for (var i = 0; i < downtimes.length; i++) {
-              	var uptime = jlinq.from(data).equals("statusCode", 1).greater("timestamp", downtimes[i].timestamp).first();
-                if (uptime != null) {
-                	totalDowntime += uptime.timestamp - downtimes[i].timestamp;
-                } else {
-                	totalDowntime += new Date().getTime() - downtimes[i].timestamp;
-                }
-              }
-              
-              console.log("Total downtime " + totalDowntime + "ms.");
-              console.log("Yearly uptime: " + (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%");
-
-              document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
-            } else {
-              console.log(`Error: ${xhr.status}`);
-            }
-          };
           `}
+        </script>
+        <script type="text/javascript">
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/");
+            xhr.send();
+            xhr.responseType = "json";
+            xhr.onload = () => {
+              if (xhr.readyState == 4 && xhr.status == 200) {
+                var data = xhr.response;
+                
+                var totalDowntime = 0;    
+                var downtimes = jlinq.from(data).equals("statusCode", 0).select();
+                for (var i = 0; i < downtimes.length; i++) {
+                	var uptime = jlinq.from(data).equals("statusCode", 1).greater("timestamp", downtimes[i].timestamp).first();
+                  if (uptime != null) {
+                  	totalDowntime += uptime.timestamp - downtimes[i].timestamp;
+                  } else {
+                  	totalDowntime += new Date().getTime() - downtimes[i].timestamp;
+                  }
+                }
+                
+                console.log("Total downtime " + totalDowntime + "ms.");
+                console.log("Yearly uptime: " + (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%");
+  
+                document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
+              } else {
+                console.log(`Error: ${xhr.status}`);
+              }
+            };
         </script>
       </Head>
       <div className="container mx-auto px-4">
