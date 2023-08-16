@@ -46,7 +46,7 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
       <Head>
         <title>{config.settings.title}</title>
         <link rel="stylesheet" href="./style.css" />
-        <script type="text/javascript" src="https://cdn.devoplus.com.tr/svrtechcdn/Generic/jlinq.min.js">
+        <script type="text/javascript" src="https://cdn.devoplus.com.tr/svrtechcdn/Generic/jlinq.min.js"></script>
         <script>
           {`
           function setTheme(theme) {
