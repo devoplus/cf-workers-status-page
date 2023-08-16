@@ -31,6 +31,5 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
         )}
       </div>
     </div>
-    <div data-handler="uptime"></div>
   )
 }
