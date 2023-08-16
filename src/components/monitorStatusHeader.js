@@ -35,6 +35,7 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
       <div class="card mb-4 font-semibold bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600">
          <div class="flex flex-row justify-between items-center">
              <div>Yearly Total Uptime: <span id="spnYearlyUptime">Loading...</span></div>
+             <div>Yearly Total Downtime (ms): <span id="spnYearlyDowntime">Loading...</span></div>
          </div>
       </div>
     </div>
