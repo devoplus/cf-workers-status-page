@@ -31,5 +31,6 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
         )}
       </div>
     </div>
+    <div className="card-uptime"></div>
   )
 }
