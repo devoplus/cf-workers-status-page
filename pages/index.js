@@ -78,7 +78,7 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
               console.log("Yearly uptime: " + (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%");
 
               document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
-              document.getElementById('spnYearlyUptime').innerText = totalDowntime;
+              document.getElementById('spnYearlyDowntime').innerText = totalDowntime;
             }
           };
           
