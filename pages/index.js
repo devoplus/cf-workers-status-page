@@ -71,13 +71,13 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
           }
 
           // Yearly
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=year");
-          xhr.send();
-          xhr.responseType = "json";
-          xhr.onload = () => {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-              var totalDowntime = calculateTotalDowntime(xhr.response);
+          var r1 = new XMLHttpRequest();
+          r1.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=year");
+          r1.send();
+          r1.responseType = "json";
+          r1.onload = () => {
+            if (r1.readyState == 4 && r1.status == 200) {
+              var totalDowntime = calculateTotalDowntime(r1.response);
               var dur = moment.duration(totalDowntime);
               document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
               document.getElementById('spnYearlyDowntime').innerText = dur.days() + " day(s) " + dur.hours() + " hour(s) " + dur.minutes() + " minute(s) " + dur.seconds() + " second(s)";
@@ -85,13 +85,13 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
           };
 
           // Monthly
-          xhr = new XMLHttpRequest();
-          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=month");
-          xhr.send();
-          xhr.responseType = "json";
-          xhr.onload = () => {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-              var totalDowntime = calculateTotalDowntime(xhr.response);
+          var r2 = new XMLHttpRequest();
+          r2.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=month");
+          r2.send();
+          r2.responseType = "json";
+          r2.onload = () => {
+            if (r2.readyState == 4 && r2.status == 200) {
+              var totalDowntime = calculateTotalDowntime(r2.response);
               var dur = moment.duration(totalDowntime);
               document.getElementById('spnMonthlyUptime').innerText = (100 - ((2592000000 / (2592000000 - totalDowntime)) - 1)).toFixed(2) + "%";
               document.getElementById('spnMonthlyDowntime').innerText = dur.days() + " day(s) " + dur.hours() + " hour(s) " + dur.minutes() + " minute(s) " + dur.seconds() + " second(s)";
