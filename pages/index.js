@@ -56,29 +56,45 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
             localStorage.theme = theme
           }
 
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/");
+          function calculateTotalDowntime(data) {
+            var totalDowntime = 0;    
+            var downtimes = jlinq.from(data).equals("statusCode", 0).select();
+            for (var i = 0; i < downtimes.length; i++) {
+              var uptime = jlinq.from(data).equals("statusCode", 1).greater("timestamp", downtimes[i].timestamp).first();
+              if (uptime != null) {
+                totalDowntime += uptime.timestamp - downtimes[i].timestamp;
+              } else {
+                totalDowntime += new Date().getTime() - downtimes[i].timestamp;
+              }
+            }
+            return totalDowntime;
+          }
+
+          // Yearly
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=year");
           xhr.send();
           xhr.responseType = "json";
           xhr.onload = () => {
             if (xhr.readyState == 4 && xhr.status == 200) {
-              var data = xhr.response;
-              
-              var totalDowntime = 0;    
-              var downtimes = jlinq.from(data).equals("statusCode", 0).select();
-              for (var i = 0; i < downtimes.length; i++) {
-                var uptime = jlinq.from(data).equals("statusCode", 1).greater("timestamp", downtimes[i].timestamp).first();
-                if (uptime != null) {
-                  totalDowntime += uptime.timestamp - downtimes[i].timestamp;
-                } else {
-                  totalDowntime += new Date().getTime() - downtimes[i].timestamp;
-                }
-              }
-              
-              var duration = moment.duration(totalDowntime);
-
+              var totalDowntime = calculateTotalDowntime(xhr.response);
+              var dur = moment.duration(totalDowntime);
               document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
               document.getElementById('spnYearlyDowntime').innerText = dur.days() + " day(s) " + dur.hours() + " hour(s) " + dur.minutes() + " minute(s) " + dur.seconds() + " second(s)";
+            }
+          };
+
+          // Monthly
+          xhr = new XMLHttpRequest();
+          xhr.open("GET", "https://cf-uptime-logger.svrtech.workers.dev/?duration=month");
+          xhr.send();
+          xhr.responseType = "json";
+          xhr.onload = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              var totalDowntime = calculateTotalDowntime(xhr.response);
+              var dur = moment.duration(totalDowntime);
+              document.getElementById('spnMonthlyUptime').innerText = (100 - ((2592000000 / (2592000000 - totalDowntime)) - 1)).toFixed(2) + "%";
+              document.getElementById('spnMonthlyDowntime').innerText = dur.days() + " day(s) " + dur.hours() + " hour(s) " + dur.minutes() + " minute(s) " + dur.seconds() + " second(s)";
             }
           };
           
