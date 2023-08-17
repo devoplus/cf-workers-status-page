@@ -46,7 +46,8 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
       <Head>
         <title>{config.settings.title}</title>
         <link rel="stylesheet" href="./style.css" />
-        <script type="text/javascript" src="https://cdn.devoplus.com.tr/svrtechcdn/Generic/jlinq.min.js"></script>
+        <script src="https://cdn.devoplus.com.tr/svrtechcdn/Generic/jlinq.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
         <script>
           {`
           function setTheme(theme) {
@@ -74,11 +75,10 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
                 }
               }
               
-              console.log("Total downtime " + totalDowntime + "ms.");
-              console.log("Yearly uptime: " + (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%");
+              var duration = moment.duration(totalDowntime);
 
               document.getElementById('spnYearlyUptime').innerText = (100 - ((31536000000 / (31536000000 - totalDowntime)) - 1)).toFixed(2) + "%";
-              document.getElementById('spnYearlyDowntime').innerText = totalDowntime;
+              document.getElementById('spnYearlyDowntime').innerText = dur.days() + " day(s) " + dur.hours() + " hour(s) " + dur.minutes() + " minute(s) " + dur.seconds() + " second(s)";
             }
           };
           
