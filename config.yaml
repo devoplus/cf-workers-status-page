@@ -46,3 +46,11 @@ monitors:
     expectStatus: 200
     linkable: false
     followRedirect: false
+
+  - id: url-shortener
+    name: URL Shortener Service
+    url: 'https://dvp.ls/'
+    method: GET
+    expectStatus: 200
+    linkable: false
+    followRedirect: true
