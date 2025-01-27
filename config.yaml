@@ -61,4 +61,4 @@ monitors:
     method: GET
     expectStatus: 200
     linkable: false
-    followRedirect: false
+    followRedirect: true
