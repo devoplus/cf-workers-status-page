@@ -55,10 +55,3 @@ monitors:
     linkable: false
     followRedirect: true
 
-  - id: web-site
-    name: Web Site
-    url: 'https://www.devoplus.com.tr/'
-    method: GET
-    expectStatus: 200
-    linkable: false
-    followRedirect: true
