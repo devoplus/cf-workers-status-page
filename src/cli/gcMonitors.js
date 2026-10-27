@@ -1,5 +1,4 @@
-const yaml = require('yaml-loader')
-const fetch = require('node-fetch')
+const YAML = require('yaml')
 const fs = require('fs')
 
 const accountId = process.env.CF_ACCOUNT_ID
@@ -51,8 +50,7 @@ async function saveKVMonitors(kvMonitorsKey, data) {
 
 function loadConfig() {
   const configFile = fs.readFileSync('./config.yaml', 'utf8')
-  const config = yaml(configFile)
-  return JSON.parse(config)
+  return YAML.parse(configFile)
 }
 
 getKvMonitors(kvMonitorsKey)
