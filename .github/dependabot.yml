@@ -1,0 +1,35 @@
+# Dependabot SÜRÜM GÜNCELLEMELERİ (version updates).
+#
+# ⚠️ Bu dosya "Dependabot alerts"i AÇMAZ. Alerts bir DEPO AYARIDIR
+# (Settings → Code security → Dependabot alerts); bu depoda kapalı
+# (ölçüldü 2026-10-27: API "Dependabot alerts are disabled" döndü).
+#
+# İki ekosistem: `npm` uygulama/araç bağımlılıkları, `github-actions` ise
+# deploy.yml'deki action sürümleri. İkincisi atlanırsa action pinleri sessizce
+# bayatlar (bu depoda checkout@v2 + setup-node@v1 + Node 12 böyle kalmıştı).
+#
+# Depoda yalnız `main` dalı var; bu yüzden target-branch verilmedi.
+# Commit mesajında Jira anahtarı bilinçli olarak yok (devoplus-auth ile aynı gerekçe:
+# sabit bir anahtar ilgisiz güncellemeleri yanlış bilete bağlar).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    # Yama/minor tek PR'da; MAJOR ayrı kalır çünkü kırıcı değişiklik taşır.
+    groups:
+      minor-ve-yama:
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: 'Chore(deps):'
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'Chore(deps):'
