@@ -17,9 +17,9 @@ const infoIcon = (
   </svg>
 )
 
-export default function MonitorCard({ key, monitor, data }) {
+export default function MonitorCard({ monitor, data }) {
   return (
-    <div key={key} className="card">
+    <div className="card">
       <div className="flex flex-row justify-between items-center mb-2">
         <div className="flex flex-row items-center align-center">
           {monitor.description && (
