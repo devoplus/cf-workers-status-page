@@ -1,11 +1,13 @@
 // Prepares everything the Worker needs before `wrangler dev` / `wrangler deploy`
-// (wired as [build] command in wrangler.toml through `yarn build`):
+// (wired as [build] command in wrangler.toml, so it must only need `node`;
+// a global `yarn` is not guaranteed there):
 // 1. config.yaml -> generated/config.json (imported by Worker and browser code)
 // 2. public/* -> out/ (served by Workers Static Assets)
 // 3. src/client.js -> out/client.js (browser bundle that hydrates the page)
-// out/style.css is compiled afterwards by `yarn css` (Tailwind CLI).
+// 4. public/tailwind.css -> out/style.css (Tailwind CLI, same as `yarn css`)
 const fs = require('fs')
 const path = require('path')
+const { execFileSync } = require('child_process')
 const esbuild = require('esbuild')
 const YAML = require('yaml')
 
@@ -62,11 +64,32 @@ async function buildClient() {
   })
 }
 
+function buildCss() {
+  const cliPackage = require.resolve('@tailwindcss/cli/package.json')
+  const cliBin = path.join(
+    path.dirname(cliPackage),
+    require(cliPackage).bin.tailwindcss,
+  )
+  execFileSync(
+    process.execPath,
+    [
+      cliBin,
+      '-i',
+      path.join(publicDir, 'tailwind.css'),
+      '-o',
+      path.join(outDir, 'style.css'),
+      '--minify',
+    ],
+    { cwd: root, stdio: 'inherit' },
+  )
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true })
   writeConfig()
   copyPublicFiles()
   await buildClient()
+  buildCss()
 }
 
 main().catch((e) => {

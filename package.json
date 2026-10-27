@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "wrangler dev",
-    "build": "node ./scripts/build.js && yarn css",
+    "build": "node ./scripts/build.js",
     "deploy": "wrangler deploy",
     "kv-gc": "node ./src/cli/gcMonitors.js",
     "format": "prettier --write '**/*.{js,css,json,md}'",

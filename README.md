@@ -104,7 +104,7 @@ You can clone the repository yourself and use Wrangler CLI (installed as a dev d
   - `SECRET_SLACK_WEBHOOK_URL`
   - `SECRET_DISCORD_WEBHOOK_URL`
   - `SECRET_TELEGRAM_API_TOKEN` and `SECRET_TELEGRAM_CHAT_ID`
-- deploy with `yarn deploy` (runs `yarn build` first, see `[build]` in [wrangler.toml](./wrangler.toml))
+- deploy with `yarn deploy` (runs [scripts/build.js](./scripts/build.js) first, see `[build]` in [wrangler.toml](./wrangler.toml))
 
 ## Workers KV free tier
 
@@ -166,7 +166,7 @@ id = "<KV_ID>"
 ```
 yarn dev --test-scheduled
 ```
-`wrangler dev` runs `yarn build` first and serves the page on `http://localhost:8787`. Trigger the cron checks locally with:
+`wrangler dev` runs [scripts/build.js](./scripts/build.js) first and serves the page on `http://localhost:8787`. Trigger the cron checks locally with:
 ```
 curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"
 ```
