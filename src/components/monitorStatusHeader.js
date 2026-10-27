@@ -1,4 +1,5 @@
-import config from '../../config.yaml'
+import config from '../config'
+import { useIsClient } from '../functions/helpers'
 import { locations } from '../functions/locations'
 
 const classes = {
@@ -9,6 +10,7 @@ const classes = {
 }
 
 export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
+  const isClient = useIsClient()
   let color = 'green'
   let text = config.settings.allmonitorsOperational
 
@@ -22,7 +24,7 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
       <div className={`card mb-4 font-semibold ${classes[color]}`}>
         <div className="flex flex-row justify-between items-center">
           <div>{text}</div>
-          {kvMonitorsLastUpdate.time && typeof window !== 'undefined' && (
+          {kvMonitorsLastUpdate.time && isClient && (
             <div className="text-xs font-light">
               checked{' '}
               {Math.round((Date.now() - kvMonitorsLastUpdate.time) / 1000)} sec
@@ -32,14 +34,16 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
           )}
         </div>
       </div>
+      {/* span texts are filled in by the inline <head> script, possibly before
+          hydration, so React must not treat them as a mismatch */}
       <div class="card mb-4 font-semibold bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600">
          <div class="row">
-             <div class="col-6">Yearly Total Uptime: <span id="spnYearlyUptime">Loading...</span></div>
-             <div class="col-6">Yearly Total Downtime: <span id="spnYearlyDowntime">Loading...</span></div>
+             <div class="col-6">Yearly Total Uptime: <span id="spnYearlyUptime" suppressHydrationWarning>Loading...</span></div>
+             <div class="col-6">Yearly Total Downtime: <span id="spnYearlyDowntime" suppressHydrationWarning>Loading...</span></div>
          </div>
          <div class="row">
-             <div class="col-6">Monthly Total Uptime: <span id="spnMonthlyUptime">Loading...</span></div>
-             <div class="col-6">Monthly Total Downtime: <span id="spnMonthlyDowntime">Loading...</span></div>
+             <div class="col-6">Monthly Total Uptime: <span id="spnMonthlyUptime" suppressHydrationWarning>Loading...</span></div>
+             <div class="col-6">Monthly Total Downtime: <span id="spnMonthlyDowntime" suppressHydrationWarning>Loading...</span></div>
          </div>
       </div>
     </div>

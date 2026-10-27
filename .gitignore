@@ -134,3 +134,7 @@ worker/
 out/
 package-lock.json
 public/style.css
+generated/
+# wrangler local state and local secrets
+.wrangler/
+.dev.vars*

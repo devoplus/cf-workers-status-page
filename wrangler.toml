@@ -1,19 +1,24 @@
 name = 'cf-workers-status-page-production'
+main = 'index.js'
 workers_dev = true
-account_id = ""
-type = "webpack"
-webpack_config = "node_modules/flareact/webpack"
-compatibility_date = "2021-07-23"
+compatibility_date = "2026-10-20"
+
+# Builds generated/config.json and ./out (style.css, client.js, public files)
+# before `wrangler dev` and `wrangler deploy`
+[build]
+command = "yarn build"
+watch_dir = ["src", "pages", "public"]
+
+# Static files are served before the Worker; "/" falls through to index.js
+[assets]
+directory = "./out"
 
 [triggers]
 crons = ["* * * * *"]
 
-[site]
-bucket = "out"
-entry-point = "./"
-
 # uncomment and adjust following if you are not using GitHub Actions
+# Use the id of the EXISTING namespace: a binding without id makes
+# `wrangler deploy` provision a new, empty namespace.
 #[env.production]
-#kv-namespaces = [{binding="KV_STATUS_PAGE", id="xxxx", preview_id=""}]
-#zone_id="xxx"
-#route="xxx"
+#kv_namespaces = [{binding="KV_STATUS_PAGE", id="xxxx", preview_id=""}]
+#routes = [{pattern="xxx", zone_id="xxx"}]

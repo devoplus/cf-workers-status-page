@@ -38,7 +38,7 @@ export default function MonitorFilter({ active, callback }) {
   return (
     <div className="col-span-6 sm:col-span-3 relative">
       <input
-        className="block w-full py-2 px-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-full shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        className="block w-full py-2 px-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-full shadow-xs focus:outline-hidden focus:ring-1 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
         type="text"
         value={input}
         onInput={handleInput}
