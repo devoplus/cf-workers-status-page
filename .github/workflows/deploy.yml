@@ -27,17 +27,28 @@ jobs:
     - run: yarn build
       env:
         NODE_ENV: production
-    # Reuses an existing KV_STATUS_PAGE namespace and only creates one when none
-    # exists, then binds it to [env.production] for this deployment
+    # Uses the KV_NAMESPACE_ID repository variable when set; otherwise reuses the
+    # single namespace whose title contains KV_STATUS_PAGE, creates one only when
+    # none exists and stops when several match (binding the wrong one would hide
+    # the existing data). The id is bound to [env.production] for this deployment.
     - name: Resolve KV namespace
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        KV_NAMESPACE_ID: ${{ vars.KV_NAMESPACE_ID }}
       run: |
         find_kv_id() {
-          yarn --silent wrangler kv namespace list | node -e "const kv = JSON.parse(require('fs').readFileSync(0, 'utf8')).find((ns) => ns.title.includes('KV_STATUS_PAGE')); process.stdout.write(kv ? kv.id : '')"
+          yarn --silent wrangler kv namespace list | node -e "
+            const matches = JSON.parse(require('fs').readFileSync(0, 'utf8')).filter((ns) => ns.title.includes('KV_STATUS_PAGE'))
+            if (matches.length > 1) {
+              console.error('Several KV namespaces match KV_STATUS_PAGE, set the KV_NAMESPACE_ID repository variable: ' + matches.map((ns) => ns.title + ' (' + ns.id + ')').join(', '))
+              process.exit(1)
+            }
+            process.stdout.write(matches.length ? matches[0].id : '')"
         }
-        KV_NAMESPACE_ID=$(find_kv_id)
+        if [ -z "$KV_NAMESPACE_ID" ]; then
+          KV_NAMESPACE_ID=$(find_kv_id)
+        fi
         if [ -z "$KV_NAMESPACE_ID" ]; then
           yarn --silent wrangler kv namespace create KV_STATUS_PAGE
           KV_NAMESPACE_ID=$(find_kv_id)
@@ -63,8 +74,13 @@ jobs:
         SECRET_TELEGRAM_API_TOKEN: ${{ secrets.SECRET_TELEGRAM_API_TOKEN || 'default-gh-action-secret' }}
         SECRET_TELEGRAM_CHAT_ID: ${{ secrets.SECRET_TELEGRAM_CHAT_ID || 'default-gh-action-secret' }}
         SECRET_DISCORD_WEBHOOK_URL: ${{ secrets.SECRET_DISCORD_WEBHOOK_URL || 'default-gh-action-secret' }}
+    # gcMonitors.js exits 0 when a variable is missing, so make that visible
     - name: Clean up KV monitors state
-      run: yarn kv-gc
+      run: |
+        if [ -z "$CF_ACCOUNT_ID" ] || [ -z "$CF_API_TOKEN" ] || [ -z "$KV_NAMESPACE_ID" ]; then
+          echo "::warning::kv-gc skipped: CF_ACCOUNT_ID, CF_API_TOKEN or KV_NAMESPACE_ID is empty"
+        fi
+        yarn kv-gc
       env:
         CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
