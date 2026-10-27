@@ -96,12 +96,15 @@ To enable telegram notifications, you'll need to take a few additional steps.
 
 ### Deploy on your own
 
-You can clone the repository yourself and use Wrangler CLI to develop/deploy, extra list of things you need to take care of:
+You can clone the repository yourself and use Wrangler CLI (installed as a dev dependency, run it with `yarn wrangler`) to develop/deploy, extra list of things you need to take care of:
 
 - create KV namespace and add the `KV_STATUS_PAGE` binding to [wrangler.toml](./wrangler.toml)
-- create Worker secrets _\(optional\)_
+  - always set the `id` of the namespace that already holds your data: a binding without `id` makes `wrangler deploy` provision a new, empty namespace
+- create Worker secrets with `yarn wrangler secret put <NAME>` _\(optional\)_
   - `SECRET_SLACK_WEBHOOK_URL`
   - `SECRET_DISCORD_WEBHOOK_URL`
+  - `SECRET_TELEGRAM_API_TOKEN` and `SECRET_TELEGRAM_CHAT_ID`
+- deploy with `yarn deploy` (runs [scripts/build.js](./scripts/build.js) first, see `[build]` in [wrangler.toml](./wrangler.toml))
 
 ## Workers KV free tier
 
@@ -125,46 +128,45 @@ WIP - Support for Durable Objects - Cloudflare's product for low-latency coordin
 
 There is also a managed version of this project, currently in beta. Feel free to check it out https://statusflare.com (https://twitter.com/statusflare_com).
 
+## How it works
+
+- [index.js](./index.js) is an ES module Worker: `scheduled` runs the checks ([src/functions/cronTrigger.js](./src/functions/cronTrigger.js)) and stores the state in KV, `fetch` renders the page with React on the server ([src/functions/renderPage.js](./src/functions/renderPage.js))
+- [src/client.js](./src/client.js) hydrates the same page ([pages/index.js](./pages/index.js)) in the browser
+- `yarn build` ([scripts/build.js](./scripts/build.js)) converts [config.yaml](./config.yaml) to `generated/config.json`, copies [public](./public) to `out`, bundles `out/client.js` and compiles Tailwind CSS to `out/style.css`; `out` is served by Workers Static Assets
+
 ## Running project locally
 **Requirements**
-- Linux or WSL
-- Yarn (`npm i -g yarn`)
-- Node 14+
+- Node.js `24.22.1+` (see [.nvmrc](./.nvmrc); earlier 24.x releases are affected by CVE-2026-111497)
+- Yarn 1 (`npm i -g yarn`)
 
 ### Steps to get server up and running
-**Install wrangler**
+**Install packages**
 ```
-npm i -g wrangler
+yarn install --frozen-lockfile
 ```
 
 **Login With Wrangler to Cloudflare**
 ```
-wrangler login
+yarn wrangler login
 ```
 
 **Create your KV namespace in cloudflare**
 ```
-On the workers page navigate to KV, and create a namespace
+yarn wrangler kv namespace create KV_STATUS_PAGE
 ```
 
 **Update your wrangler.toml with**
 ```
-kv-namespaces = [{binding="KV_STATUS_PAGE", id="<KV_ID>", preview_id="<KV_ID>"}]
-```
-_Note: you may need to change `kv-namespaces` to `kv_namespaces`_
-
-**Install packages**
-```
-yarn install
-```
-
-**Create CSS**
-```
-yarn run css
+[[kv_namespaces]]
+binding = "KV_STATUS_PAGE"
+id = "<KV_ID>"
 ```
 
 **Run**
 ```
-yarn run dev
+yarn dev --test-scheduled
 ```
-_Note: If the styles do not come through try using `localhost:8787` instead of `localhost:8080`_
+`wrangler dev` runs [scripts/build.js](./scripts/build.js) first and serves the page on `http://localhost:8787`. Trigger the cron checks locally with:
+```
+curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"
+```

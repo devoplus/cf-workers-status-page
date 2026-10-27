@@ -1,4 +1,4 @@
-import config from '../../config.yaml'
+import config from '../config'
 import MonitorStatusLabel from './monitorStatusLabel'
 import MonitorHistogram from './monitorHistogram'
 
@@ -7,7 +7,7 @@ const infoIcon = (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
     fill="currentColor"
-    className="h-5 mr-2 mx-auto text-blue-500 dark:text-blue-400"
+    className="h-5 mr-2 mx-auto text-sky-500 dark:text-sky-400"
   >
     <path
       fillRule="evenodd"
@@ -17,9 +17,9 @@ const infoIcon = (
   </svg>
 )
 
-export default function MonitorCard({ key, monitor, data }) {
+export default function MonitorCard({ monitor, data }) {
   return (
-    <div key={key} className="card">
+    <div className="card">
       <div className="flex flex-row justify-between items-center mb-2">
         <div className="flex flex-row items-center align-center">
           {monitor.description && (

@@ -1,16 +1,25 @@
-import config from '../../config.yaml'
+import config from '../config'
 import { useEffect, useState } from 'react'
 
 const kvDataKey = 'monitors_data_v1_1'
 
-export async function getKVMonitors() {
-  // trying both to see performance difference
-  return KV_STATUS_PAGE.get(kvDataKey, 'json')
-  //return JSON.parse(await KV_STATUS_PAGE.get(kvDataKey, 'text'))
+function getKVNamespace(env) {
+  if (!env.KV_STATUS_PAGE) {
+    throw new Error(
+      'KV_STATUS_PAGE binding is missing, add it to wrangler.toml (see README)',
+    )
+  }
+  return env.KV_STATUS_PAGE
 }
 
-export async function setKVMonitors(data) {
-  return setKV(kvDataKey, JSON.stringify(data))
+export async function getKVMonitors(env) {
+  // trying both to see performance difference
+  return getKVNamespace(env).get(kvDataKey, 'json')
+  //return JSON.parse(await getKVNamespace(env).get(kvDataKey, 'text'))
+}
+
+export async function setKVMonitors(env, data) {
+  return setKV(env, kvDataKey, JSON.stringify(data))
 }
 
 const getOperationalLabel = (operational) => {
@@ -19,11 +28,11 @@ const getOperationalLabel = (operational) => {
     : config.settings.monitorLabelNotOperational
 }
 
-export async function setKV(key, value, metadata, expirationTtl) {
-  return KV_STATUS_PAGE.put(key, value, { metadata, expirationTtl })
+export async function setKV(env, key, value, metadata, expirationTtl) {
+  return getKVNamespace(env).put(key, value, { metadata, expirationTtl })
 }
 
-export async function notifySlack(monitor, operational) {
+export async function notifySlack(env, monitor, operational) {
   const payload = {
     attachments: [
       {
@@ -56,14 +65,14 @@ export async function notifySlack(monitor, operational) {
       },
     ],
   }
-  return fetch(SECRET_SLACK_WEBHOOK_URL, {
+  return fetch(env.SECRET_SLACK_WEBHOOK_URL, {
     body: JSON.stringify(payload),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   })
 }
 
-export async function notifyTelegram(monitor, operational) {
+export async function notifyTelegram(env, monitor, operational) {
   const text = `Monitor *${monitor.name.replaceAll(
     '-',
     '\\-',
@@ -73,11 +82,11 @@ export async function notifyTelegram(monitor, operational) {
   }\` \\- 👀 [Status Page](${config.settings.url})`
 
   const payload = new FormData()
-  payload.append('chat_id', SECRET_TELEGRAM_CHAT_ID)
+  payload.append('chat_id', env.SECRET_TELEGRAM_CHAT_ID)
   payload.append('parse_mode', 'MarkdownV2')
   payload.append('text', text)
 
-  const telegramUrl = `https://api.telegram.org/bot${SECRET_TELEGRAM_API_TOKEN}/sendMessage`
+  const telegramUrl = `https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}/sendMessage`
   return fetch(telegramUrl, {
     body: payload,
     method: 'POST',
@@ -85,7 +94,7 @@ export async function notifyTelegram(monitor, operational) {
 }
 
 // Visualize your payload using https://leovoel.github.io/embed-visualizer/
-export async function notifyDiscord(monitor, operational) {
+export async function notifyDiscord(env, monitor, operational) {
   const payload = {
     username: `${config.settings.title}`,
     avatar_url: `${config.settings.url}/${config.settings.logo}`,
@@ -101,7 +110,7 @@ export async function notifyDiscord(monitor, operational) {
       },
     ],
   }
-  return fetch(SECRET_DISCORD_WEBHOOK_URL, {
+  return fetch(env.SECRET_DISCORD_WEBHOOK_URL, {
     body: JSON.stringify(payload),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -134,6 +143,18 @@ export function useKeyPress(targetKey) {
   }, [])
 
   return keyPressed
+}
+
+// false during server render and hydration, true after mount; keeps the first
+// client render identical to the server HTML so React 19 can hydrate it
+export function useIsClient() {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  return isClient
 }
 
 export async function getCheckLocation() {
