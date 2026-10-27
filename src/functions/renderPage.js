@@ -7,6 +7,8 @@ import { dataElementId, rootElementId } from './hydration'
 
 // global helpers used by the theme switcher and the uptime summary, rendered
 // in <head> so the theme class is set before first paint
+// jlinq is served from ./out (public/jlinq.min.js): the former
+// cdn.devoplus.com.tr copy answers with Cloudflare error 1016 (origin DNS)
 const headScript = `
           function setTheme(theme) {
             document.documentElement.classList.remove("dark", "light")
@@ -99,7 +101,7 @@ export async function renderPage(env) {
 
   return `<!DOCTYPE html><html lang="en"><head><meta name="viewport" content="width=device-width"/><meta charset="utf-8"/><title>${escapeHtml(
     config.settings.title,
-  )}</title><link rel="stylesheet" href="./style.css"/><script src="https://cdn.devoplus.com.tr/svrtechcdn/Generic/jlinq.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script><script>${headScript}</script></head><body><div id="${rootElementId}">${app}</div><script id="${dataElementId}" type="application/json">${serializeProps(
+  )}</title><link rel="stylesheet" href="./style.css"/><script src="./jlinq.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.31.0/moment.min.js" integrity="sha512-iJIt5wigccZYA4F3G8kWt8H0r43JDWpvBweaGct6QsveuU4zmyP6VX2EXMfSfA/Z80b1PfHUNLioFfY1Z55cCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><script>${headScript}</script></head><body><div id="${rootElementId}">${app}</div><script id="${dataElementId}" type="application/json">${serializeProps(
     props,
   )}</script><script type="module" src="./client.js"></script></body></html>`
 }
