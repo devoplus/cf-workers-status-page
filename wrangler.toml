@@ -17,8 +17,14 @@ directory = "./out"
 crons = ["* * * * *"]
 
 # uncomment and adjust following if you are not using GitHub Actions
+# (`yarn deploy` deploys this top-level Worker; the GitHub Actions workflow adds
+# its own [env.production] and deploys "<name>-production" instead)
 # Use the id of the EXISTING namespace: a binding without id makes
 # `wrangler deploy` provision a new, empty namespace.
-#[env.production]
-#kv_namespaces = [{binding="KV_STATUS_PAGE", id="xxxx", preview_id=""}]
-#routes = [{pattern="xxx", zone_id="xxx"}]
+#[[kv_namespaces]]
+#binding = "KV_STATUS_PAGE"
+#id = "xxxx"
+#
+#[[routes]]
+#pattern = "xxx"
+#zone_id = "xxx"
