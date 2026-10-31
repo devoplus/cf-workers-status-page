@@ -99,7 +99,7 @@ To enable telegram notifications, you'll need to take a few additional steps.
 You can clone the repository yourself and use Wrangler CLI (installed as a dev dependency, run it with `yarn wrangler`) to develop/deploy, extra list of things you need to take care of:
 
 - create KV namespace and add the `KV_STATUS_PAGE` binding to [wrangler.toml](./wrangler.toml)
-  - always set the `id` of the namespace that already holds your data: a binding without `id` makes `wrangler deploy` provision a new, empty namespace
+  - [wrangler.toml](./wrangler.toml) already declares the binding without `id`: `wrangler deploy` keeps the `KV_STATUS_PAGE` namespace the deployed Worker is bound to, and only a Worker without that binding gets a new, empty namespace (set `id` to pin a specific one)
 - create Worker secrets with `yarn wrangler secret put <NAME>` _\(optional\)_
   - `SECRET_SLACK_WEBHOOK_URL`
   - `SECRET_DISCORD_WEBHOOK_URL`
@@ -145,28 +145,11 @@ There is also a managed version of this project, currently in beta. Feel free to
 yarn install --frozen-lockfile
 ```
 
-**Login With Wrangler to Cloudflare**
-```
-yarn wrangler login
-```
-
-**Create your KV namespace in cloudflare**
-```
-yarn wrangler kv namespace create KV_STATUS_PAGE
-```
-
-**Update your wrangler.toml with**
-```
-[[kv_namespaces]]
-binding = "KV_STATUS_PAGE"
-id = "<KV_ID>"
-```
-
 **Run**
 ```
 yarn dev --test-scheduled
 ```
-`wrangler dev` runs [scripts/build.js](./scripts/build.js) first and serves the page on `http://localhost:8787`. Trigger the cron checks locally with:
+`wrangler dev` runs [scripts/build.js](./scripts/build.js) first and serves the page on `http://localhost:8787` with a local KV namespace, so no Cloudflare login or namespace is needed. Trigger the cron checks locally with:
 ```
 curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"
 ```
