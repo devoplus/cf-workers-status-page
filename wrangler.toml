@@ -17,15 +17,16 @@ directory = "./out"
 [triggers]
 crons = ["* * * * *"]
 
-# uncomment and adjust following if you are not using GitHub Actions
-# (`yarn deploy` deploys this top-level Worker; the GitHub Actions workflow adds
-# its own [env.production] and deploys "<name>-production" instead)
-# Use the id of the EXISTING namespace: a binding without id makes
-# `wrangler deploy` provision a new, empty namespace.
-#[[kv_namespaces]]
-#binding = "KV_STATUS_PAGE"
-#id = "xxxx"
-#
+# No id on purpose: on `wrangler deploy` / `versions upload` Wrangler 4 reuses
+# the KV_STATUS_PAGE binding the deployed Worker already has, so the live data
+# stays attached; only a Worker without that binding gets a new namespace
+# (wrangler 4.153 KVHandler.canInherit + default-on resource provisioning).
+# Set `id` to pin a specific namespace. The GitHub Actions workflow adds its own
+# [env.production] binding and deploys "<name>-production" instead.
+[[kv_namespaces]]
+binding = "KV_STATUS_PAGE"
+
+# uncomment and adjust following to serve the page on a custom domain
 #[[routes]]
 #pattern = "xxx"
 #zone_id = "xxx"
