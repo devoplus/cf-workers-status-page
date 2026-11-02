@@ -18,6 +18,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Yarn 4, bir haftadan genç sürümleri kurmuyor (.yarnrc.yml, npmMinimalAgeGate
+    # varsayılanı 1w). Dependabot da aynı süreyi beklesin; yoksa kurulamayacak
+    # sürümler için PR açar. Güvenlik güncellemelerine cooldown uygulanmaz.
+    cooldown:
+      default-days: 7
     # Yama/minor tek PR'da; MAJOR ayrı kalır çünkü kırıcı değişiklik taşır.
     groups:
       minor-ve-yama:
