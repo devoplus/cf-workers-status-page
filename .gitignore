@@ -138,3 +138,11 @@ generated/
 # wrangler local state and local secrets
 .wrangler/
 .dev.vars*
+# Yarn 4 (Corepack installs Yarn itself, the cache is global)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
