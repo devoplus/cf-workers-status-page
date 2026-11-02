@@ -66,6 +66,7 @@ getKvMonitors(kvMonitorsKey)
       // remove monitor data from state if missing in config
       if (!configMonitors.includes(monitor)) {
         delete stateMonitors.monitors[monitor]
+        return
       }
 
       // delete dates older than config.settings.daysInHistogram
