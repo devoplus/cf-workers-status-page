@@ -5,10 +5,12 @@ compatibility_date = "2026-10-20"
 
 # Builds generated/config.json and ./out (style.css, client.js, public files)
 # before `wrangler dev` and `wrangler deploy`; only needs `node`, so it also
-# works when wrangler is started without a global `yarn` (e.g. via npx)
+# works when wrangler is started without a global `yarn` (e.g. via npx).
+# watch_dir lists the build inputs only (config.yaml included); watching the
+# outputs (out/, generated/) would make every rebuild trigger the next one.
 [build]
 command = "node scripts/build.js"
-watch_dir = ["src", "pages", "public"]
+watch_dir = ["src", "pages", "public", "config.yaml"]
 
 # Static files are served before the Worker; "/" falls through to index.js
 [assets]
