@@ -137,12 +137,13 @@ There is also a managed version of this project, currently in beta. Feel free to
 ## Running project locally
 **Requirements**
 - Node.js `24.22.1+` (see [.nvmrc](./.nvmrc); earlier 24.x releases are affected by CVE-2026-111497)
-- Yarn 1 (`npm i -g yarn`)
+- Yarn 4 through Corepack: run `corepack enable` once and Corepack installs the Yarn version pinned in `packageManager` ([package.json](./package.json)). Node.js 26 no longer ships Corepack, install it there with `npm i -g corepack`
+- [.yarnrc.yml](./.yarnrc.yml) keeps the Yarn 4 secure defaults: install scripts of dependencies do not run and package versions published less than a week ago are not installed
 
 ### Steps to get server up and running
 **Install packages**
 ```
-yarn install --frozen-lockfile
+yarn install --immutable
 ```
 
 **Run**

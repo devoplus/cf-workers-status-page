@@ -22,8 +22,10 @@ jobs:
     - uses: actions/setup-node@v7
       with:
         node-version-file: .nvmrc
-        cache: yarn
-    - run: yarn install --frozen-lockfile
+    # Yarn 4 comes from the packageManager field in package.json through Corepack
+    # (bundled with Node 24); the runner's global Yarn 1 refuses this project
+    - run: corepack enable
+    - run: yarn install --immutable
     - run: yarn build
       env:
         NODE_ENV: production
@@ -38,7 +40,7 @@ jobs:
         KV_NAMESPACE_ID: ${{ vars.KV_NAMESPACE_ID }}
       run: |
         find_kv_id() {
-          yarn --silent wrangler kv namespace list | node -e "
+          yarn wrangler kv namespace list | node -e "
             const matches = JSON.parse(require('fs').readFileSync(0, 'utf8')).filter((ns) => ns.title.includes('KV_STATUS_PAGE'))
             if (matches.length > 1) {
               console.error('Several KV namespaces match KV_STATUS_PAGE, set the KV_NAMESPACE_ID repository variable: ' + matches.map((ns) => ns.title + ' (' + ns.id + ')').join(', '))
@@ -50,7 +52,7 @@ jobs:
           KV_NAMESPACE_ID=$(find_kv_id)
         fi
         if [ -z "$KV_NAMESPACE_ID" ]; then
-          yarn --silent wrangler kv namespace create KV_STATUS_PAGE
+          yarn wrangler kv namespace create KV_STATUS_PAGE
           KV_NAMESPACE_ID=$(find_kv_id)
         fi
         [ -n "$KV_NAMESPACE_ID" ] || { echo "KV_STATUS_PAGE namespace not found"; exit 1; }
